@@ -1,0 +1,21 @@
+#!/bin/bash
+if [ $# -lt 2 ]; then
+	mono --debug bin/Debug/MonoDepGen.exe
+	exit 1
+fi
+
+LIBDIR="$1"
+PREFIX="$2"
+PREFIXDIR="`dirname $2`"
+
+if [ ! -d "$PREFIXDIR" ]; then
+	mkdir -p "$PREFIXDIR"
+fi
+
+echo Generating dot files in the "$PREFIXDIR" directory
+mono --debug bin/Debug/MonoDepGen.exe "$LIBDIR" "$PREFIX"
+for d in "$PREFIXDIR"/*.dot; do
+	echo -n Generating "${d%.*}.png"
+	dot -Tpng -o "${d%.*}.png" "$d"
+	echo
+done
